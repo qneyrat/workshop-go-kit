@@ -11,7 +11,7 @@ RUN go get -u -v github.com/golang/protobuf/proto; \
     go get -u -v google.golang.org/grpc; \
     go get -u -v github.com/golang/dep/cmd/dep
 
-WORKDIR $GOPATH/src/product-service
+WORKDIR $GOPATH/src/workshop-go-kit/product-service
 ADD . .
 RUN dep ensure
 

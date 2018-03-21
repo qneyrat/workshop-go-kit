@@ -12,7 +12,7 @@ RUN go get -u -v github.com/golang/protobuf/proto; \
     go get -u -v github.com/vektah/gqlgen; \
     go get -u -v github.com/golang/dep/cmd/dep
 
-WORKDIR $GOPATH/src/graphql-gateway
+WORKDIR $GOPATH/src/workshop-go-kit/graphql-gateway
 ADD . .
 RUN dep ensure
 

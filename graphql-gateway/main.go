@@ -7,7 +7,7 @@ import (
 
 	"github.com/vektah/gqlgen/handler"
 
-	"graphql-gateway/graph"
+	"workshop-go-kit/graphql-gateway/graph"
 )
 
 func main() {
