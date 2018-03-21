@@ -1,3 +1,4 @@
-run: 
+build: 
 	@docker build -t product-service .
-	@docker run --rm -it -p 4001:4000 -v $(pwd):/go/src/product-service product-service sh
+run:	
+	@docker run --rm -it -p 4001:4000 -v `pwd`:/go/src/product-service product-service sh
