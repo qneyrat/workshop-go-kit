@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package proto;
+
+message ListRequest {
+    int32 MaxResult = 1;
+}
+
+message ProductResponse {
+    int32 ID = 1;
+    string Name = 2;
+}
+
+message ListResponse {
+    repeated ProductResponse ProductList = 1;
+}
+
+message CreateProductRequest {
+    string Name = 1;
+}
+
+service Product {
+    rpc List(ListRequest) returns (ListResponse);
+    rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
+}

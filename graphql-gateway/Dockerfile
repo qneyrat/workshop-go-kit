@@ -2,6 +2,7 @@ FROM golang:alpine
 
 RUN apk add --update \
     git \
+    make \
     protobuf
 
 RUN rm -rf /var/cache/apk/*; rm -rf /tmp/*
