@@ -3,40 +3,40 @@ package product
 import (
 	"context"
 
-	transport "github.com/go-kit/kit/transport/grpc"
+	gt "github.com/go-kit/kit/transport/grpc"
 
-	"workshop-go-kit/product-service/proto"
+	"workshop-go-kit/product-service/pb"
 )
 
-type Server struct {
-	list          transport.Handler
-	createProduct transport.Handler
+type GRPCServer struct {
+	getProduct    gt.Handler
+	createProduct gt.Handler
 }
 
-func (s *Server) List(ctx context.Context, req *proto.ListRequest) (*proto.ListResponse, error) {
-	_, resp, err := s.list.ServeGRPC(ctx, req)
+func (s *GRPCServer) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.ProductResponse, error) {
+	_, resp, err := s.getProduct.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return resp.(*proto.ListResponse), nil
+	return resp.(*pb.ProductResponse), nil
 }
 
-func (s *Server) CreateProduct(ctx context.Context, req *proto.CreateProductRequest) (*proto.ProductResponse, error) {
+func (s *GRPCServer) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.ProductResponse, error) {
 	_, resp, err := s.createProduct.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return resp.(*proto.ProductResponse), nil
+	return resp.(*pb.ProductResponse), nil
 }
 
-func NewServer(_ context.Context, endpoint Endpoints) proto.ProductServer {
-	return &Server{
-		list: transport.NewServer(
-			endpoint.ListEndpoint,
-			DecodeListRequest,
-			EncodeListResponse,
+func NewGRPCServer(_ context.Context, endpoint Endpoints) pb.ProductServer {
+	return &GRPCServer{
+		getProduct: gt.NewServer(
+			endpoint.GetProductEndpoint,
+			DecodeGetProductRequest,
+			EncodeProductResponse,
 		),
-		createProduct: transport.NewServer(
+		createProduct: gt.NewServer(
 			endpoint.CreateProductEndpoint,
 			DecodeCreateProductRequest,
 			EncodeProductResponse,

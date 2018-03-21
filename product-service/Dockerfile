@@ -1,18 +1,13 @@
 FROM golang:alpine
 
-RUN apk add --update \
-    git \
-    make \
-    protobuf
-
+RUN apk add --update git
 RUN rm -rf /var/cache/apk/*; rm -rf /tmp/*
+RUN go get -u -v github.com/golang/dep/cmd/dep
+RUN go get github.com/pilu/fresh
 
-RUN go get -u -v github.com/golang/protobuf/proto; \
-    go get -u -v github.com/golang/protobuf/protoc-gen-go; \
-    go get -u -v github.com/golang/dep/cmd/dep
-
-WORKDIR $GOPATH/src/workshop-go-kit/product-service
+WORKDIR /go/src/workshop-go-kit/product-service
 ADD . .
-RUN dep ensure
+#RUN dep ensure
 
-CMD ["go", "run", "main.go"]
+CMD ["fresh"]
+EXPOSE 9090

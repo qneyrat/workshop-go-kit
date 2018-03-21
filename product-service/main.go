@@ -8,29 +8,31 @@ import (
 	"google.golang.org/grpc"
 
 	"workshop-go-kit/product-service/database"
+	"workshop-go-kit/product-service/pb"
 	"workshop-go-kit/product-service/product"
-	"workshop-go-kit/product-service/proto"
 )
 
 func main() {
-	productService := &product.ProductService{database.PGProductRepository{}}
-	endpoints := product.Endpoints{
-		ListEndpoint:          product.MakeListEndpoint(productService),
-		CreateProductEndpoint: product.MakeCreateProductEndpoint(productService),
-	}
-
 	ctx := context.Background()
-	handler := product.NewServer(ctx, endpoints)
-	server := grpc.NewServer()
-	proto.RegisterProductServer(server, handler)
+	productService := &product.ProductService{database.NewDBProductRepository()}
+	errors := make(chan error)
 
-	listener, err := net.Listen("tcp", ":4000")
-	if err != nil {
-		fmt.Println(err)
+	go func() {
+		listener, err := net.Listen("tcp", ":9090")
+		if err != nil {
+			errors <- err
+			return
+		}
 
-		return
-	}
+		gRPCServer := grpc.NewServer()
+		pb.RegisterProductServer(gRPCServer, product.NewGRPCServer(ctx, product.Endpoints{
+			GetProductEndpoint:    product.MakeGetProductEndpoint(productService),
+			CreateProductEndpoint: product.MakeCreateProductEndpoint(productService),
+		}))
 
-	fmt.Println("gRPC listen on :4000")
-	server.Serve(listener)
+		fmt.Println("gRPC listen on 9090")
+		errors <- gRPCServer.Serve(listener)
+	}()
+
+	fmt.Println(<-errors)
 }

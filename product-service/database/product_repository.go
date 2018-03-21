@@ -6,19 +6,32 @@ type Product struct {
 }
 
 type ProductRepository interface {
-	FindAll() ([]*Product, error)
-	New(name string) (*Product, error)
+	FindById(id int32) (*Product, error)
+	Create(name string) (*Product, error)
 }
 
-type PGProductRepository struct{}
-
-func (r PGProductRepository) FindAll() ([]*Product, error) {
-	product1 := &Product{1, "test"}
-	product2 := &Product{2, "test"}
-
-	return []*Product{product1, product2}, nil
+type DBProductRepository struct {
+	cursor int32
+	DB     map[int32]*Product
 }
 
-func (r PGProductRepository) New(name string) (*Product, error) {
-	return &Product{1, name}, nil
+func (r *DBProductRepository) FindById(id int32) (*Product, error) {
+	return r.DB[id], nil
+}
+
+func (r *DBProductRepository) Create(name string) (*Product, error) {
+	r.cursor++
+	product := &Product{
+		r.cursor,
+		name,
+	}
+	r.DB[product.ID] = product
+	return product, nil
+}
+
+func NewDBProductRepository() *DBProductRepository {
+	return &DBProductRepository{
+		0,
+		make(map[int32]*Product),
+	}
 }

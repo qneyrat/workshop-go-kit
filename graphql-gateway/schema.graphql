@@ -1,12 +1,17 @@
-type Product {
-  id: ID!
-  name: String!
-}
+schema {
+		query: Query
+		mutation: Mutation
+	}
 
 type Query {
-  products: [Product]!
+  product(id: Int!): Product!
 }
 
 type Mutation {
   createProduct(name: String!): Product!
+}
+
+type Product {
+  id: Int!
+  name: String!
 }

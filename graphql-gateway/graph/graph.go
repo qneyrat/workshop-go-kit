@@ -2,23 +2,26 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
+
+	"workshop-go-kit/graphql-gateway/client"
 )
 
 type App struct {
-	products []Product
+	ProductClient client.ProductGRPCClient
 }
 
-func (a *App) Query_products(ctx context.Context) ([]Product, error) {
-	return a.products, nil
+func (a *App) Query_product(ctx context.Context, id int) (Product, error) {
+	res := a.ProductClient.GetProduct(int32(id))
+	return Product{
+		int(res.Id),
+		res.Name,
+	}, nil
 }
 
 func (a *App) Mutation_createProduct(ctx context.Context, name string) (Product, error) {
-	product := Product{
-		ID:   fmt.Sprintf("T%d", rand.Int()),
-		Name: name,
-	}
-	a.products = append(a.products, product)
-	return product, nil
+	res := a.ProductClient.CreateProduct(name)
+	return Product{
+		int(res.Id),
+		res.Name,
+	}, nil
 }

@@ -21,7 +21,7 @@ func MakeExecutableSchema(resolvers Resolvers) graphql.ExecutableSchema {
 type Resolvers interface {
 	Mutation_createProduct(ctx context.Context, name string) (Product, error)
 
-	Query_products(ctx context.Context) ([]Product, error)
+	Query_product(ctx context.Context, id int) (Product, error)
 }
 
 type executableSchema struct {
@@ -137,7 +137,7 @@ func (ec *executionContext) _Product(sel []query.Selection, obj *Product) graphq
 
 func (ec *executionContext) _Product_id(field graphql.CollectedField, obj *Product) graphql.Marshaler {
 	res := obj.ID
-	return graphql.MarshalID(res)
+	return graphql.MarshalInt(res)
 }
 
 func (ec *executionContext) _Product_name(field graphql.CollectedField, obj *Product) graphql.Marshaler {
@@ -157,8 +157,8 @@ func (ec *executionContext) _Query(sel []query.Selection) graphql.Marshaler {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "products":
-			out.Values[i] = ec._Query_products(field)
+		case "product":
+			out.Values[i] = ec._Query_product(field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(field)
 		case "__type":
@@ -171,7 +171,16 @@ func (ec *executionContext) _Query(sel []query.Selection) graphql.Marshaler {
 	return out
 }
 
-func (ec *executionContext) _Query_products(field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_product(field graphql.CollectedField) graphql.Marshaler {
+	var arg0 int
+	if tmp, ok := field.Args["id"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalInt(tmp)
+		if err != nil {
+			ec.Error(err)
+			return graphql.Null
+		}
+	}
 	return graphql.Defer(func() (ret graphql.Marshaler) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -180,16 +189,12 @@ func (ec *executionContext) _Query_products(field graphql.CollectedField) graphq
 				ret = graphql.Null
 			}
 		}()
-		res, err := ec.resolvers.Query_products(ec.ctx)
+		res, err := ec.resolvers.Query_product(ec.ctx, arg0)
 		if err != nil {
 			ec.Error(err)
 			return graphql.Null
 		}
-		arr1 := graphql.Array{}
-		for idx1 := range res {
-			arr1 = append(arr1, func() graphql.Marshaler { return ec._Product(field.Selections, &res[idx1]) }())
-		}
-		return arr1
+		return ec._Product(field.Selections, &res)
 	})
 }
 
@@ -710,7 +715,7 @@ func (ec *executionContext) ___Type_ofType(field graphql.CollectedField, obj *in
 	return ec.___Type(field.Selections, res)
 }
 
-var parsedSchema = schema.MustParse("type Product {\n  id: ID!\n  name: String!\n}\n\ntype Query {\n  products: [Product]!\n}\n\ntype Mutation {\n  createProduct(name: String!): Product!\n}\n")
+var parsedSchema = schema.MustParse("schema {\n\t\tquery: Query\n\t\tmutation: Mutation\n\t}\n\ntype Query {\n  product(id: Int!): Product!\n}\n\ntype Mutation {\n  createProduct(name: String!): Product!\n}\n\ntype Product {\n  id: Int!\n  name: String!\n}\n")
 
 func (ec *executionContext) introspectSchema() *introspection.Schema {
 	return introspection.WrapSchema(parsedSchema)

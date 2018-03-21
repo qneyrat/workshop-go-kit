@@ -3,29 +3,23 @@ package product
 import (
 	"context"
 
-	"workshop-go-kit/product-service/proto"
+	"workshop-go-kit/product-service/pb"
 )
-
-func DecodeListRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*proto.ListRequest)
-	return ListRequest{req.MaxResult}, nil
-}
-
-func EncodeListResponse(_ context.Context, _ interface{}) (interface{}, error) {
-	return &proto.ListResponse{
-		nil,
-	}, nil
-}
-
-func DecodeCreateProductRequest(_ context.Context, r interface{}) (interface{}, error) {
-	req := r.(*proto.CreateProductRequest)
-	return CreateProductRequest{req.Name}, nil
-}
 
 func EncodeProductResponse(_ context.Context, r interface{}) (interface{}, error) {
 	res := r.(ProductResponse)
-	return &proto.ProductResponse{
+	return &pb.ProductResponse{
 		res.ID,
 		res.Name,
 	}, nil
+}
+
+func DecodeGetProductRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.GetProductRequest)
+	return GetProductRequest{req.Id}, nil
+}
+
+func DecodeCreateProductRequest(_ context.Context, r interface{}) (interface{}, error) {
+	req := r.(*pb.CreateProductRequest)
+	return CreateProductRequest{req.Name}, nil
 }

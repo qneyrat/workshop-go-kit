@@ -22,5 +22,17 @@
 
 
 [[constraint]]
-  name = "github.com/gorilla/mux"
-  version = "1.6.1"
+  name = "github.com/go-kit/kit"
+  version = "0.7.0"
+
+[[constraint]]
+  name = "github.com/golang/protobuf"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/net"
+
+[[constraint]]
+  name = "google.golang.org/grpc"
+  version = "1.10.0"

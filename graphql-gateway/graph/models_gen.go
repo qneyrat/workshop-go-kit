@@ -3,6 +3,6 @@
 package graph
 
 type Product struct {
-	ID   string
+	ID   int
 	Name string
 }
